@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard de seguimiento SARLAFT JER">
+  <meta name="theme-color" content="#3949ab">
+  <title>Informe de Gestión SARLAFT | JER</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="auth-brand-mark">JER</span><div><h1>Dashboard SARLAFT</h1><p>Oficial de cumplimiento · JER S.A.</p></div></div>
+      <div class="auth-tabs" role="tablist">
+        <button id="show-login" class="auth-tab active" type="button" role="tab" aria-selected="true">Iniciar sesión</button>
+        <button id="show-register" class="auth-tab" type="button" role="tab" aria-selected="false">Crear cuenta</button>
+      </div>
+      <form id="login-form" class="auth-form">
+        <label for="login-email">Correo electrónico</label>
+        <input id="login-email" name="email" type="email" autocomplete="username" required placeholder="nombre@empresa.com">
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="Tu contraseña">
+        <button class="button button-primary auth-submit" type="submit">Iniciar sesión</button>
+        <button id="reset-password" class="link-button" type="button">Olvidé mi contraseña</button>
+      </form>
+      <form id="register-form" class="auth-form" hidden>
+        <label for="register-name">Nombre</label>
+        <input id="register-name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Nombre y apellido">
+        <label for="register-email">Correo electrónico</label>
+        <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="nombre@empresa.com">
+        <label for="register-password">Crear contraseña</label>
+        <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres">
+        <button class="button button-primary auth-submit" type="submit">Crear cuenta</button>
+        <p class="auth-help">Crear una cuenta no autoriza automáticamente a consultar el informe. El administrador debe habilitar tu correo en Apps Script.</p>
+      </form>
+      <p id="auth-message" class="auth-message" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div id="app-shell" hidden>
+    <header class="app-toolbar" aria-label="Controles del informe">
+      <div class="toolbar-brand">
+        <span class="toolbar-dot"></span>
+        <div><strong>Informe de gestión SARLAFT</strong><small>Oficial de cumplimiento · JER S.A.</small></div>
+      </div>
+      <div class="filters">
+        <label for="year-select">Año</label>
+        <select id="year-select" aria-label="Seleccionar año"><option value="">Cargando…</option></select>
+        <div class="month-control">
+          <button id="month-toggle" class="button button-secondary" type="button" aria-expanded="false" aria-controls="month-popover">Meses: Todos</button>
+          <div id="month-popover" class="month-popover" hidden>
+            <div class="month-preset-row">
+              <button type="button" class="month-preset" data-preset="ALL">Todos</button>
+              <button type="button" class="month-preset" data-preset="Q1">T1</button>
+              <button type="button" class="month-preset" data-preset="Q2">T2</button>
+              <button type="button" class="month-preset" data-preset="Q3">T3</button>
+              <button type="button" class="month-preset" data-preset="Q4">T4</button>
+              <button type="button" class="month-preset" data-preset="H1">Sem. 1</button>
+              <button type="button" class="month-preset" data-preset="H2">Sem. 2</button>
+            </div>
+            <div id="month-checkboxes" class="month-checkboxes"></div>
+            <div class="month-popover-footer"><span id="month-selected-count">12 meses seleccionados</span><button id="month-done" class="button button-primary" type="button">Listo</button></div>
+          </div>
+        </div>
+        <button id="apply-filters" class="button button-secondary" type="button">Consultar</button>
+        <button id="edit-toggle" class="button button-secondary" type="button" aria-pressed="false">Editar textos</button>
+        <button id="insert-text" class="button button-secondary" type="button" aria-pressed="false" title="Selecciona dónde insertar el texto">T Texto</button>
+        <button id="add-page" class="button button-secondary" type="button">+ Página</button>
+        <button id="delete-page" class="button button-secondary" type="button">Eliminar página</button>
+        <button id="move-page-up" class="button button-secondary" type="button" title="Mover página seleccionada hacia arriba">↑</button>
+        <button id="move-page-down" class="button button-secondary" type="button" title="Mover página seleccionada hacia abajo">↓</button>
+        <button id="change-logo" class="button button-secondary" type="button">Cambiar logo</button>
+        <input id="logo-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        <button id="export-settings" class="button button-secondary" type="button">Exportar edición</button>
+        <button id="import-settings" class="button button-secondary" type="button">Importar edición</button>
+        <input id="settings-file" type="file" accept="application/json,.json" hidden>
+        <button id="download-pdf" class="button button-primary" type="button" disabled>Descargar PDF</button>
+        <span id="signed-in-user" class="signed-in-user"></span>
+        <button id="sign-out" class="button button-secondary" type="button">Salir</button>
+      </div>
+    </header>
+    <div id="status-banner" class="status-banner" role="status" aria-live="polite">Inicia sesión para cargar los datos autorizados.</div>
+    <main id="report-pages" class="report-pages" aria-live="polite">
+      <section class="empty-state"><h1>Dashboard SARLAFT JER</h1><p>Inicia sesión para consultar el informe.</p></section>
+    </main>
+    <div id="editor-help" class="editor-help" hidden></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/13.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/13.0.0/firebase-auth-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/local-store.js"></script>
+  <script src="js/month-filter.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
